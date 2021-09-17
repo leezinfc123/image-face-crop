@@ -1,2 +1,5 @@
+numpy
 uvicorn
-pilow
+Pillow
+mtcnn
+fastapi
