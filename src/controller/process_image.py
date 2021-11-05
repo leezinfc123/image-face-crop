@@ -7,7 +7,8 @@ from PIL import Image
 import io
 import numpy as np
 
-from controller.mtcnn_model import create_model
+from src.controller.mtcnn_model import create_model
+from src.controller.process_folder import create_folder_save
 
 Model_MTCCN = create_model()
 
@@ -31,6 +32,12 @@ def crop_face_image(file):
     image_bytes = file.file.read()
     decode = io.BytesIO(image_bytes)
     image = Image.open(decode)
+    file_name = file.filename
+    try:
+        create_folder_save(file_name)
+    except Exception as e:
+        print("crop_face_image error: {}".format(e))
+        return "exist file image"
     try:
         image = process_crop_face_image(image)
     except Exception as e:

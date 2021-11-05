@@ -3,3 +3,5 @@ uvicorn
 Pillow
 mtcnn
 fastapi
+pymongo
+mongoengine
