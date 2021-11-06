@@ -32,15 +32,20 @@ def crop_face_image(file):
     image_bytes = file.file.read()
     decode = io.BytesIO(image_bytes)
     image = Image.open(decode)
-    file_name = file.filename
-    try:
-        create_folder_save(file_name)
-    except Exception as e:
-        print("crop_face_image error: {}".format(e))
-        return "exist file image"
     try:
         image = process_crop_face_image(image)
     except Exception as e:
         print("crop_face_image error: {}".format(e))
         return "crop face image fail"
     return get_bytes_value(image)
+
+
+def save_image(file, folder_path):
+    image_bytes = file.file.read()
+    decode = io.BytesIO(image_bytes)
+    image = Image.open(decode)
+    try:
+        image.save(folder_path, 'png')
+    except Exception as e:
+        print("save_image error: {}".format(e))
+        return "save_image image fail"
