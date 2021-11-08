@@ -12,7 +12,7 @@ from src.model.mongodb import BaseModel
 class ImageModel(BaseModel, Document):
     video_name = StringField()
     image_name = StringField()
-    path = StringField()
+    parent_dir = StringField()
     created_time = DateTimeField()
     priority = IntField()
 
@@ -20,7 +20,7 @@ class ImageModel(BaseModel, Document):
         super().__init__(*args, **values)
         self.collection_name = 'image_test'
 
-    def save_image(self, video_name, image_name, path):
+    def save_image(self, video_name, image_name, parent_dir):
         priority = self.count_by_query({'video_name': video_name})
         if not priority:
             priority = 1
@@ -28,7 +28,7 @@ class ImageModel(BaseModel, Document):
         data_image = {
             "video_name": video_name,
             "image_name": image_name,
-            "path": path,
+            "parent_dir": parent_dir,
             "created_time": datetime.datetime.utcnow(),
             'priority': priority
         }

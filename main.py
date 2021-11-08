@@ -33,7 +33,7 @@ async def save_image(video_name: str = Form(...), images: List[UploadFile] = Fil
 
 
 @app.get("/list-image/")
-async def save_image(video_name: str = ''):
+async def get_list_image(video_name: str = ''):
     return Response(ImageController.get_list_image(video_name), status_code=200)
 
 

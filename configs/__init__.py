@@ -3,7 +3,6 @@
  Company: MobioVN
  Date created: 02/11/2021
 """
-import os
 
 
 class Mongo:
@@ -13,7 +12,9 @@ class Mongo:
 
 
 class Folder:
+    # path source code
+    local_path = "/home/hieu/image-face-crop"
     # parent_dir
-    data_dir = "../../src/data"
+    data_dir = "./src/data"
     manual_directory = "/manual_images/"
     crop_directory = "/crop_images/"

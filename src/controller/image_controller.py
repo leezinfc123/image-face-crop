@@ -3,37 +3,63 @@
  Company: MobioVN
  Date created: 05/11/2021
 """
-import json
+import glob
+import os
+
+from PIL import Image
 
 from configs import Folder
 from src.controller.process_folder import create_folder_save
-from src.controller.process_image import save_image
+from src.controller.process_image import save_image_manual, process_crop_face_image, save_image_crop
 from src.model.mongodb.image import ImageModel
 
 
 class ImageController:
     @staticmethod
     def save_image(files, video_name):
-
         # folder parent save images manual
-        parent_dir = Folder.data_dir + Folder.manual_directory
+        parent_manual_dir = Folder.data_dir + Folder.manual_directory
+        parent_crop_dir = Folder.data_dir + Folder.crop_directory
         try:
             # create folder data
-            print('save_image:create_folder_save')
-            create_folder_save(parent_dir, video_name)
+            print('save_image:create_folder_save: {} -- {}'.format(parent_manual_dir, video_name))
+            print('save_image:create_folder_save: {} -- {}'.format(parent_crop_dir, video_name))
+            create_folder_save(parent_manual_dir, video_name)
+            create_folder_save(parent_crop_dir, video_name)
         except Exception as e:
             print("crop_face_image error: {}".format(e))
             return "exist file image"
 
         current_number_image = ImageModel().count_by_query({'video_name': video_name})
-        path = parent_dir + video_name
+        path = parent_manual_dir + video_name
+        # save manual image
         for file in files:
-            image_name = video_name + '_' + str(current_number_image)
-            path = path + '/' + image_name
-            save_image(file, path)
-            ImageModel().save_image(video_name, image_name, path)
+            current_number_image += 1
+            image_name = video_name + '_' + str(current_number_image) + '.png'
+            save_image_manual(file, path, image_name)
+            ImageModel().save_image(video_name, image_name, parent_manual_dir)
+
+        ImageController.process_crop_face_image(video_name)
 
     @staticmethod
     def get_list_image(video_name):
         images = ImageModel().get_images(video_name)
         return images
+
+    @staticmethod
+    def process_crop_face_image(video_name):
+        manual_image_path = Folder.data_dir + Folder.manual_directory
+        os.chdir(Folder.local_path)
+        os.chdir(manual_image_path)
+        for filename in glob.glob('{}/*.png'.format(video_name)):
+            image = Image.open(filename)
+            try:
+                image = process_crop_face_image(image)
+                save_image_crop(image, video_name, 'hoang_19.png')
+            except Exception as e:
+                print("crop_face_image error: {}".format(e))
+                return "crop face image fail"
+
+
+if __name__ == '__main__':
+    ImageController.process_crop_face_image('hieu')

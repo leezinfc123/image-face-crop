@@ -3,19 +3,21 @@
  Company: MobioVN
  Date created: 16/09/2021
 """
+import os
+
 from PIL import Image
 import io
 import numpy as np
 
+from configs import Folder
 from src.controller.mtcnn_model import create_model
-from src.controller.process_folder import create_folder_save
 
 Model_MTCCN = create_model()
 
 
 def get_bytes_value(image):
     img_byte_arr = io.BytesIO()
-    image.save(img_byte_arr, format='JPEG')
+    image.save(img_byte_arr, format='PNG')
     return img_byte_arr.getvalue()
 
 
@@ -29,10 +31,11 @@ def process_crop_face_image(image):
 
 
 def crop_face_image(file):
-    image_bytes = file.file.read()
-    decode = io.BytesIO(image_bytes)
-    image = Image.open(decode)
+
     try:
+        image_bytes = file.file.read()
+        decode = io.BytesIO(image_bytes)
+        image = Image.open(decode)
         image = process_crop_face_image(image)
     except Exception as e:
         print("crop_face_image error: {}".format(e))
@@ -40,12 +43,39 @@ def crop_face_image(file):
     return get_bytes_value(image)
 
 
-def save_image(file, folder_path):
+def crop_face_image_2(file):
+
+    try:
+        image_bytes = file.file.read()
+        decode = io.BytesIO(image_bytes)
+        image = Image.open(decode)
+        image = process_crop_face_image(image)
+        return image
+    except Exception as e:
+        print("crop_face_image error: {}".format(e))
+        return "crop face image fail"
+
+
+def save_image_manual(file, folder_path, image_name):
     image_bytes = file.file.read()
     decode = io.BytesIO(image_bytes)
     image = Image.open(decode)
     try:
-        image.save(folder_path, 'png')
+        os.chdir(Folder.local_path)
+        os.chdir(folder_path)
+        image.save(image_name, 'PNG')
+    except Exception as e:
+        print("save_image error: {}".format(e))
+        return "save_image image fail"
+
+
+def save_image_crop(image, video_name, image_name):
+    try:
+        os.chdir(Folder.local_path)
+        parent_dir = Folder.data_dir + Folder.crop_directory
+        os.chdir(parent_dir)
+        os.chdir(video_name)
+        image.save(image_name, 'PNG')
     except Exception as e:
         print("save_image error: {}".format(e))
         return "save_image image fail"
