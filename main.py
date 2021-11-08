@@ -27,14 +27,14 @@ async def crop_image(file: UploadFile = File(...)):
     return Response(crop_face_image(file), status_code=200)
 
 
-@app.post("/save-image/")
+@app.post("/crop-face-image-2/")
 async def save_image(video_name: str = Form(...), images: List[UploadFile] = File(...)):
     return Response(ImageController.save_image(images, video_name), status_code=200)
 
 
 @app.get("/list-image/")
 async def get_list_image(video_name: str = ''):
-    return Response(ImageController.get_list_image(video_name), status_code=200)
+    return ImageController.get_list_image(video_name)
 
 
 if __name__ == '__main__':
